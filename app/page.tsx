@@ -9,6 +9,7 @@ const Hero = dynamic(() => import('@/components/site/hero').then(mod => mod.Hero
 const Features = dynamic(() => import('@/components/site/features').then(mod => mod.Features), { ssr: true })
 const InteractiveFeatures = dynamic(() => import('@/components/sections/interactive-features').then(mod => mod.InteractiveFeatures), { ssr: true })
 const VisualStorytelling = dynamic(() => import('@/components/sections/visual-storytelling').then(mod => mod.VisualStorytelling), { ssr: true })
+const WeatherSection = dynamic(() => import('@/components/sections/weather-section').then(mod => mod.WeatherSection), { ssr: true })
 const BlueCarbonExpanded = dynamic(() => import('@/components/site/blue-carbon-expanded').then(mod => mod.BlueCarbonExpanded), { ssr: true })
 const CoastalAwarenessInterconnectivity = dynamic(() => import('@/components/site/coastal-awareness-interconnectivity').then(mod => mod.CoastalAwarenessInterconnectivity), { ssr: true })
 const CTA = dynamic(() => import('@/components/site/cta').then(mod => mod.CTA), { ssr: true })
@@ -47,6 +48,9 @@ export default function HomePage() {
           <VisualStorytelling />
         </Suspense>
 
+        <Suspense fallback={<LoadingSpinner />}>
+          <WeatherSection />
+        </Suspense>
 
         <Suspense fallback={<LoadingSpinner />}>
           <BlueCarbonExpanded />

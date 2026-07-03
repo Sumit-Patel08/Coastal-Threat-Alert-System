@@ -2,10 +2,11 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import type { User } from "@supabase/supabase-js"
+import type { AppUser } from "@/lib/auth/session"
+import { clearBrowserDemoSession, getClientAppSession } from "@/lib/auth/session"
 
 interface AuthContextType {
-  user: User | null
+  user: AppUser | null
   loading: boolean
   signOut: () => Promise<void>
 }
@@ -13,33 +14,46 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<AppUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   useEffect(() => {
-    // Get initial session
+    let subscription: { unsubscribe: () => void } | null = null
+
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const session = await getClientAppSession()
       setUser(session?.user ?? null)
       setLoading(false)
     }
 
     getInitialSession()
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    try {
+      const supabase = createClient()
+      const { data } = supabase.auth.onAuthStateChange(async () => {
+        const session = await getClientAppSession()
         setUser(session?.user ?? null)
         setLoading(false)
-      }
-    )
+      })
+      subscription = data.subscription
+    } catch {
+      // Supabase may be unavailable; demo sessions still work via cookie.
+    }
 
-    return () => subscription.unsubscribe()
-  }, [supabase.auth])
+    return () => subscription?.unsubscribe()
+  }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    clearBrowserDemoSession()
+
+    try {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+    } catch {
+      // Ignore Supabase errors while signing out of a local demo session.
+    }
+
+    setUser(null)
   }
 
   return (

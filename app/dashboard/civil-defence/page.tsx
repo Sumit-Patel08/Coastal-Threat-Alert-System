@@ -12,8 +12,8 @@ import { CivilDefenceAlertComposer } from "@/components/alerts/civil-defence-ale
 import { AlertHistory } from "@/components/alerts/alert-history"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { getClientAppSession } from "@/lib/auth/session"
 
 export default function CivilDefenceDashboard() {
   const { toast } = useToast()
@@ -25,32 +25,24 @@ export default function CivilDefenceDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
+      const session = await getClientAppSession()
+
+      if (!session) {
         router.push("/auth/login")
         return
       }
 
-      // Check if user has the correct role
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      if (profile?.role !== "civil_defence") {
+      if (session.role !== "civil_defence") {
         router.push("/dashboard")
         return
       }
 
-      setUser(user)
+      setUser(session.user)
       setIsLoading(false)
     }
 
     checkAuth()
-  }, [])
+  }, [router])
 
   // Handler functions for button functionality
   const handleDeployResponse = async (alert: any) => {

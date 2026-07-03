@@ -44,15 +44,22 @@ export default function TestRLSPage() {
 
       // Test 3: Check RLS policies
       setTestResult(prev => prev + "\n\n3. Checking RLS policies...")
-      const { data: policiesData, error: policiesError } = await supabase
-        .rpc('get_policies', { table_name: 'profiles' })
-        .catch(() => ({ data: null, error: { message: 'RPC function not available' } }))
-      
+      let policiesData: unknown = null
+      let policiesError: { message: string } | null = null
+      try {
+        const policiesResult = await supabase.rpc('get_policies', { table_name: 'profiles' })
+        policiesData = policiesResult.data
+        policiesError = policiesResult.error
+      } catch {
+        policiesError = { message: 'RPC function not available' }
+      }
+
       if (policiesError) {
         setTestResult(prev => prev + `\n⚠️ Could not check policies directly: ${policiesError.message}`)
         setTestResult(prev => prev + "\n   (This is normal - checking manually)")
       } else {
-        setTestResult(prev => prev + `\n✅ Policies check: ${policiesData?.length || 0} policies found`)
+        const policyCount = Array.isArray(policiesData) ? policiesData.length : 0
+        setTestResult(prev => prev + `\n✅ Policies check: ${policyCount} policies found`)
       }
 
       // Test 4: Try to insert a test record (this should fail due to RLS)

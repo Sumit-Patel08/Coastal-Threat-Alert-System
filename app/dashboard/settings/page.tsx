@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import { getClientAppSession } from "@/lib/auth/session"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -70,6 +71,25 @@ export default function SettingsPage() {
     if (!user) return
     
     try {
+      const session = await getClientAppSession()
+      if (session?.isDemo) {
+        setProfile({
+          id: session.user.id,
+          first_name: session.profile.first_name || undefined,
+          last_name: session.profile.last_name || undefined,
+          organization: session.profile.organization || undefined,
+          role: session.profile.role,
+          notification_preferences: {
+            email_alerts: true,
+            sms_alerts: false,
+            push_notifications: true,
+            weekly_reports: true,
+          },
+          theme_preference: "system",
+        })
+        return
+      }
+
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -105,6 +125,16 @@ export default function SettingsPage() {
     
     setSaving(true)
     try {
+      const session = await getClientAppSession()
+      if (session?.isDemo) {
+        setProfile({ ...profile, ...updates })
+        toast({
+          title: "Demo mode",
+          description: "Profile changes are local only while Supabase is offline.",
+        })
+        return
+      }
+
       const { error } = await supabase
         .from("profiles")
         .update(updates)

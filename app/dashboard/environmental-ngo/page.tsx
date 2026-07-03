@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getClientAppSession } from "@/lib/auth/session"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,30 +25,20 @@ export default function EnvironmentalNGODashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const session = await getClientAppSession()
 
-      if (!user) {
+      if (!session) {
         router.push("/auth/login")
         return
       }
 
-      // Check if user has the correct role
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      if (profile?.role !== "environmental_ngo") {
+      if (session.role !== "environmental_ngo") {
         router.push("/dashboard")
         return
       }
 
-      setUser(user)
-      setProfile(profile)
+      setUser(session.user)
+      setProfile(session.profile)
       setLoading(false)
     }
 
@@ -106,7 +96,7 @@ export default function EnvironmentalNGODashboard() {
   return (
     <div className="flex-1 space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Disaster Management Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Environmental NGO Dashboard</h1>
         <p className="text-muted-foreground">
           Monitor coastal ecosystems and environmental threats
         </p>

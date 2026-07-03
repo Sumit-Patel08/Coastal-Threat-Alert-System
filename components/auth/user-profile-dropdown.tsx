@@ -3,7 +3,7 @@
 import { useAuth } from "@/components/auth/auth-provider"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { getClientAppSession } from "@/lib/auth/session"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +17,9 @@ import { Button } from "@/components/ui/button"
 import { User, LogOut, Settings } from "lucide-react"
 
 interface UserProfile {
-  first_name?: string
-  last_name?: string
-  organization?: string
+  first_name?: string | null
+  last_name?: string | null
+  organization?: string | null
   role?: string
 }
 
@@ -27,28 +27,27 @@ export function UserProfileDropdown() {
   const { user, signOut } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const supabase = createClient()
 
   useEffect(() => {
-    if (user) {
-      const fetchProfile = async () => {
-        const { data } = await supabase
-          .from("profiles")
-          .select("first_name, last_name, organization, role")
-          .eq("id", user.id)
-          .single()
-        
-        if (data) {
-          setProfile(data)
-        }
-      }
-      fetchProfile()
+    if (!user) {
+      setProfile(null)
+      return
     }
-  }, [user, supabase])
+
+    const fetchProfile = async () => {
+      const session = await getClientAppSession()
+      if (session?.profile) {
+        setProfile(session.profile)
+      }
+    }
+
+    fetchProfile()
+  }, [user])
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
+    router.push("/")
+    router.refresh()
   }
 
   const getInitials = () => {
@@ -74,7 +73,7 @@ export function UserProfileDropdown() {
       coastal_government: "Coastal Government",
       environmental_ngo: "Environmental NGO",
       fisherfolk: "Fisherfolk",
-      civil_defence: "Civil Defence"
+      civil_defence: "Civil Defence",
     }
     return profile?.role ? roleMap[profile.role] || profile.role : "User"
   }
@@ -95,12 +94,8 @@ export function UserProfileDropdown() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{getDisplayName()}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {getRoleDisplay()}
-            </p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-xs leading-none text-muted-foreground">{getRoleDisplay()}</p>
             {profile?.organization && (
               <p className="text-xs leading-none text-muted-foreground">
                 {profile.organization}
@@ -109,11 +104,11 @@ export function UserProfileDropdown() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+        <DropdownMenuItem onClick={() => router.push("/dashboard")}>
           <User className="mr-2 h-4 w-4" />
           <span>Dashboard</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
+        <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>

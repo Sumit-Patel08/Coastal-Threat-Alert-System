@@ -11,6 +11,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useSearchParams } from "next/navigation"
+import { authenticateDemo, DEMO_ACCOUNTS, DEMO_PASSWORD } from "@/lib/demo-auth"
+import { setBrowserDemoSession } from "@/lib/auth/session"
 
 export default function Page() {
   const [email, setEmail] = useState("")
@@ -20,8 +22,6 @@ export default function Page() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Removed auto-login check - users must always provide credentials
-
   useEffect(() => {
     const urlError = searchParams.get("error")
     if (urlError) {
@@ -29,14 +29,28 @@ export default function Page() {
     }
   }, [searchParams])
 
+  const finishLogin = () => {
+    const next = searchParams.get("next")
+    router.push(next || "/dashboard")
+    router.refresh()
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
-    // Check if Supabase is configured
+    // Demo accounts work fully offline (no Supabase required)
+    const demoSession = authenticateDemo(email, password)
+    if (demoSession) {
+      setBrowserDemoSession(demoSession)
+      finishLogin()
+      setIsLoading(false)
+      return
+    }
+
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      setError("Authentication service is not configured. Please set up Supabase environment variables.")
+      setError("Invalid credentials. Use a demo account or configure Supabase.")
       setIsLoading(false)
       return
     }
@@ -49,13 +63,13 @@ export default function Page() {
         password,
       })
       if (error) throw error
-
-      const next = searchParams.get("next")
-      router.push(next || "/dashboard")
+      finishLogin()
     } catch (error: unknown) {
       if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch')) {
-          setError("Unable to connect to authentication service. Please check your internet connection and try again.")
+        if (error.message.includes("Failed to fetch")) {
+          setError(
+            "Supabase is unavailable. Use a demo account below (password: demo123) to continue offline.",
+          )
         } else {
           setError(error.message)
         }
@@ -74,7 +88,9 @@ export default function Page() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>Enter your email below to login to your account</CardDescription>
+              <CardDescription>
+                Enter your email below to login. Demo accounts work without Supabase.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>
@@ -110,6 +126,29 @@ export default function Page() {
                   <Link href="/auth/sign-up" className="underline underline-offset-4">
                     Sign up
                   </Link>
+                </div>
+                <div className="mt-4 rounded-md border bg-muted/40 p-3">
+                  <p className="mb-2 text-xs font-medium text-muted-foreground">
+                    Demo accounts (password: {DEMO_PASSWORD}) — work offline
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {DEMO_ACCOUNTS.map((account) => (
+                      <Button
+                        key={account.email}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => {
+                          setEmail(account.email)
+                          setPassword(DEMO_PASSWORD)
+                          setError(null)
+                        }}
+                      >
+                        {account.label}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
                 <div className="mt-4 flex justify-center">
                   <Link

@@ -79,9 +79,9 @@ export function DashboardClient() {
     <div className="flex-1 space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Disaster Management System</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Disaster Management Dashboard</h1>
           <p className="text-muted-foreground">
-            Fully automated threat detection and emergency response coordination for <span className="font-semibold text-blue-600">{selectedCity}</span>
+            Coastal environmental monitoring and conservation management for <span className="font-semibold text-blue-600">{selectedCity}</span>
           </p>
         </div>
         <AlertsDropdown />

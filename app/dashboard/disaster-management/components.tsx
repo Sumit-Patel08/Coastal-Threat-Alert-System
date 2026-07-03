@@ -139,7 +139,7 @@ export function useCoastalThreatData() {
   }
 
   const startAutomatedAnalysis = async () => {
-    // Fetch real-time weather data only
+    // Uses 30-minute server cache unless refresh=true is passed
     await fetch(`/api/weather?city=${selectedCity}`)
     // AI analysis is now only triggered manually
   }

@@ -92,9 +92,9 @@ export function useAutomatedCoastalSystem() {
   }
 
   const startAutomatedAnalysis = async () => {
-    // Fetch real-time weather data
+    // Uses 30-minute server cache unless refresh=true is passed
     await fetch(`/api/weather?city=${selectedCity}`)
-    
+
     // Run AI analysis
     await runAIAnalysis()
   }

@@ -1,8 +1,83 @@
-# Coastal Threat Project - Role-Based Dashboard System
+# CoastalAlert — Coastal Threat Alert System
 
-A comprehensive coastal threat monitoring and response system with role-based access control for different stakeholders in coastal management and disaster response.
+A comprehensive coastal threat monitoring and response platform with role-based dashboards for governments, NGOs, disaster teams, civil defence, and coastal communities.
 
-## 🚀 Features
+## Landing Page
+
+The public homepage (`/`) introduces CoastalAlert through the sections below. Navigation includes **Features**, **Interactive**, **Visual Stories**, **Blue Carbon**, **Interconnectivity**, **About**, **Dashboards**, **Sign in**, and **Get Started**.
+
+### Coastal Threat Alert System (Hero)
+
+Monitor storm surge, flooding, and erosion risks. Share timely alerts with residents, planners, and responders to protect coastal communities.
+
+- **Open Dashboard** — jump into role-based monitoring
+- **View Live Map** — explore coastal risk and live conditions
+- Live coastal imagery with a **Live View** indicator
+
+### Comprehensive Coastal Protection (Features)
+
+Core platform capabilities shown on the Features section:
+
+| Feature | Description |
+| --- | --- |
+| **Real-time Alerts** | Instant notifications for coastal threats and emergencies with severity levels and recommended actions |
+| **Risk Assessment** | AI-powered analysis of coastal conditions to predict and assess threats before they escalate |
+| **Interactive Map** | Visual representation of risk zones, weather patterns, and emergency resources |
+| **Community Dashboard** | Connect with local authorities and community members to coordinate responses |
+| **Weather Integration** | Real-time weather data for forecasting and early warning systems |
+| **Analytics & Reports** | Tools for tracking trends and improving response strategies |
+
+### Blue Carbon Ecosystems: Nature's Coastal Defense
+
+Blue carbon ecosystems—mangroves, seagrasses, and salt marshes—store carbon up to **10× faster** than terrestrial forests while protecting coastlines.
+
+#### Ecosystem Types
+
+| Ecosystem | Carbon Storage | Protection | Key Benefits |
+| --- | --- | --- | --- |
+| **Mangroves** | 1,023 tons CO₂/hectare | Reduces wave energy by 70% | Storm surge protection, nursery habitats, coastal stabilization |
+| **Seagrass Meadows** | 830 tons CO₂/hectare | Reduces wave height by 36% | Water filtration, oxygen production, marine biodiversity |
+| **Salt Marshes** | 687 tons CO₂/hectare | Absorbs 70% of wave energy | Flood control, wildlife habitat, water purification |
+
+#### Global Blue Carbon Impact
+
+| Metric | Value |
+| --- | --- |
+| Global Coverage | **49 million hectares** |
+| Carbon Storage | **25.5 billion tons** |
+| Annual Sequestration | **216 million tons CO₂** |
+| Economic Value | **$48,000 / hectare / year** |
+
+### Five-Dashboard Stakeholder Network (Interconnectivity)
+
+Each stakeholder group has a specialized dashboard tailored to its needs, with shared situational awareness across the network.
+
+#### Government Agencies
+- **Role:** Policy makers and regulatory oversight
+- **Responsibilities:** Emergency response coordination, resource allocation, public safety regulations, infrastructure planning
+- **Connected to:** NGOs, Disaster Management, Civic Organizations
+
+#### NGOs & Environmental Groups
+- **Role:** Community advocacy and environmental protection
+- **Responsibilities:** Community outreach, environmental monitoring, awareness campaigns, conservation projects
+- **Connected to:** Government, Civic Organizations, Disaster Management
+
+#### Civic Organizations
+- **Role:** Community representation and local action
+- **Responsibilities:** Local mobilization, volunteer coordination, public awareness, grassroots initiatives
+- **Connected to:** NGOs, Government, Disaster Management
+
+#### Disaster Management
+- **Role:** Emergency response and crisis management
+- **Responsibilities:** Emergency response, risk assessment, evacuation planning, recovery coordination
+- **Connected to:** Government, NGOs, Civic Organizations
+
+#### Coastal Communities
+- **Role:** Direct beneficiaries and local knowledge providers
+- **Responsibilities:** Local threat reporting, community preparedness, traditional knowledge sharing, early warning dissemination
+- **Connected to:** All stakeholder groups
+
+## Role-Based Dashboards
 
 ### Role-Based Authentication System
 - **5 distinct user roles** with specialized dashboards
@@ -47,7 +122,7 @@ A comprehensive coastal threat monitoring and response system with role-based ac
 - **Map** with demo evacuation routes
 - **Team deployment** and status tracking
 
-## 🛠️ Technical Implementation
+## Technical Implementation
 
 ### Database Schema
 ```sql
@@ -113,7 +188,27 @@ NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000/dashboard
 
 ### Database Setup
 1. Execute `scripts/001_profiles.sql` to create the profiles table
-2. The system will automatically handle profile creation during user registration
+2. Execute `scripts/002_profile_trigger.sql` so new users get a profile automatically
+3. Execute `scripts/007_seed_demo_users.sql` to create the demo accounts below
+4. (Optional) Run remaining scripts in `scripts/` for alerts and sample data
+
+### Demo Accounts (work offline — no Supabase required)
+
+Use these sample logins at `/auth/login`. Demo accounts use a **local session cookie** so you can open every role dashboard even when Supabase is down. Real Supabase email/password login still works when the project is available.
+
+| Dashboard | Email (username) | Password | Dashboard path |
+| --- | --- | --- | --- |
+| Disaster Management | `disaster@demo.com` | `demo123` | `/dashboard/disaster-management` |
+| Coastal City Government | `government@demo.com` | `demo123` | `/dashboard/coastal-government` |
+| Environmental NGO | `ngo@demo.com` | `demo123` | `/dashboard/environmental-ngo` |
+| Fisherfolk | `fisher@demo.com` | `demo123` | `/dashboard/fisherfolk` |
+| Civil Defence | `defence@demo.com` | `demo123` | `/dashboard/civil-defence` |
+
+All demo accounts share the simplified password **`demo123`**.
+
+On the login page, click a role button to auto-fill credentials, then press **Login**.
+
+Optional: when Supabase is available again, you can also seed the same emails into Auth with `scripts/007_seed_demo_users.sql` or `node scripts/seed-demo-users.mjs`.
 
 ## 🎨 UI Components
 

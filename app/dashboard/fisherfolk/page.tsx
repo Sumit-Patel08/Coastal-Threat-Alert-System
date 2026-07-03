@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { getClientAppSession } from "@/lib/auth/session"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -24,27 +24,19 @@ export default function FisherfolkDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const session = await getClientAppSession()
 
-      if (!user) {
+      if (!session) {
         router.push("/auth/login")
         return
       }
 
-      // Check if user has the correct role
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      if (profile?.role !== "fisherfolk") {
+      if (session.role !== "fisherfolk") {
         router.push("/dashboard")
         return
       }
 
-      setUser(user)
+      setUser(session.user)
       setLoading(false)
     }
 

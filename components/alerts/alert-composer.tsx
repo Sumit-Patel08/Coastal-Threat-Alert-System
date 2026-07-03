@@ -60,7 +60,6 @@ export function AlertComposer() {
         .single()
 
       if (insertErr || !inserted?.id) {
-        // @ts-expect-error supabase error may have code
         if (insertErr?.code === "42P01") {
           throw new Error("Database not initialized. Please run scripts/001_profiles.sql - 006_detections.sql.")
         }

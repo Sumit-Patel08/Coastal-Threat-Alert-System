@@ -33,11 +33,11 @@ export async function AlertsList({ title = "Alerts" }: { title?: string }) {
   } = await supabase.auth.getUser()
 
   // Default role: resident (used in landing demos prior to signup)
-  let role: "admin" | "agency" | "community" | "resident" | "researcher" = "resident"
+  let role = "resident"
 
   if (user) {
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle()
-    role = (profile?.role || "resident") as typeof role
+    role = profile?.role || "resident"
   }
 
   const audiences = role === "admin" ? undefined : ["all", role]

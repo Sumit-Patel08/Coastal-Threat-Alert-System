@@ -1,6 +1,3 @@
-
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,27 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AlertTriangle, TrendingUp, Map, Bell, Activity } from "lucide-react"
 import { AIAlertLogs } from "@/components/alerts/ai-alert-logs"
 import { HistoricalTrendsCharts } from "@/components/charts/historical-trends-charts"
+import { requireServerRole } from "@/lib/auth/session.server"
 
 export default async function DisasterManagementDashboard() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect("/auth/login")
-  }
-
-  // Check if user has the correct role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single()
-
-  if (profile?.role !== "disaster_management") {
-    redirect("/dashboard")
-  }
+  await requireServerRole("disaster_management")
 
   // Mock data for hackathon MVP
   const riskData = [
@@ -50,7 +30,7 @@ export default async function DisasterManagementDashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Disaster Management Dashboard</h1>
           <p className="text-muted-foreground">
-            Monitor coastal threats and coordinate emergency responses
+            Monitor coastal ecosystems and environmental conservation efforts
           </p>
         </div>
         <Button>

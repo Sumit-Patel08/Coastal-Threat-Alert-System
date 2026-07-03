@@ -9,8 +9,8 @@ import { Progress } from "@/components/ui/progress"
 import { Building2, MapPin, FileText, TrendingUp, Shield, Users, AlertTriangle, Factory, Waves, Camera, CheckCircle2, XCircle, Clock, Zap, Eye, Phone } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { getClientAppSession } from "@/lib/auth/session"
 
 export default function CoastalGovernmentDashboard() {
   const { toast } = useToast()
@@ -22,31 +22,24 @@ export default function CoastalGovernmentDashboard() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
+      const session = await getClientAppSession()
+
+      if (!session) {
         router.push("/auth/login")
         return
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single()
-
-      if (profile?.role !== "coastal_government") {
+      if (session.role !== "coastal_government") {
         router.push("/dashboard")
         return
       }
 
-      setUser(user)
+      setUser(session.user)
       setIsLoading(false)
     }
 
     checkAuth()
-  }, [])
+  }, [router])
 
   // Handler functions
   const handleAlertAction = async (alert: any, action: string) => {
