@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const config = {
   images: {
     unoptimized: true,
   },
+  // Update from experimental.turbo to turbopack
+  turbopack: {
+    enabled: true
+  }
 }
 
-export default nextConfig
+export default config
