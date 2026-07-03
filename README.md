@@ -10,6 +10,8 @@ The public homepage (`/`) introduces CoastalAlert through the sections below. Na
 
 Monitor storm surge, flooding, and erosion risks. Share timely alerts with residents, planners, and responders to protect coastal communities.
 
+![Coastal Threat Alert System hero section](docs/screenshots/hero-coastal-threat-alert.png)
+
 - **Open Dashboard** — jump into role-based monitoring
 - **View Live Map** — explore coastal risk and live conditions
 - Live coastal imagery with a **Live View** indicator
@@ -17,6 +19,8 @@ Monitor storm surge, flooding, and erosion risks. Share timely alerts with resid
 ### Comprehensive Coastal Protection (Features)
 
 Core platform capabilities shown on the Features section:
+
+![Comprehensive Coastal Protection features](docs/screenshots/features-coastal-protection.png)
 
 | Feature | Description |
 | --- | --- |
@@ -30,6 +34,8 @@ Core platform capabilities shown on the Features section:
 ### Blue Carbon Ecosystems: Nature's Coastal Defense
 
 Blue carbon ecosystems—mangroves, seagrasses, and salt marshes—store carbon up to **10× faster** than terrestrial forests while protecting coastlines.
+
+![Blue Carbon Ecosystems section](docs/screenshots/blue-carbon-ecosystems.png)
 
 #### Ecosystem Types
 
@@ -51,6 +57,8 @@ Blue carbon ecosystems—mangroves, seagrasses, and salt marshes—store carbon 
 ### Five-Dashboard Stakeholder Network (Interconnectivity)
 
 Each stakeholder group has a specialized dashboard tailored to its needs, with shared situational awareness across the network.
+
+![Five-Dashboard Stakeholder Network](docs/screenshots/stakeholder-network.png)
 
 #### Government Agencies
 - **Role:** Policy makers and regulatory oversight
